@@ -3,6 +3,20 @@
 #include "image.h"
 #include "hex.h"
 #include "input_util.h"
+#include <SDL2/SDL_clipboard.h>
+
+static void pencil_paste_clipboard(input_util_t* iu) {
+    if (!SDL_HasClipboardText()) return;
+    char* text = SDL_GetClipboardText();
+    if (!text) return;
+    input_util_wipe(iu);
+    for (int i = 0; text[i] != '\0'; i++) {
+        char c = text[i];
+        if (c >= 'A' && c <= 'F') c = c - 'A' + 'a';
+        if (iu->key_filter(c)) INPUT_UTIL_ADD(iu, c);
+    }
+    SDL_free(text);
+}
 
 typedef enum {
     PENCIL_MODE_DRAW,
@@ -58,9 +72,9 @@ static uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
     // if we're in "color input mode" we'll basically swallow all keypresses as well
     if (pencil_mode == PENCIL_MODE_INPUT_COLOR || pencil_mode == PENCIL_MODE_INPUT_ALPHA) {
         if (evt->keysym.sym == SDLK_ESCAPE) {
-            // escape cancel color input
             pencil_mode = PENCIL_MODE_DRAW;
-
+        } else if ((evt->keysym.mod & KMOD_CTRL) && evt->keysym.sym == SDLK_v) {
+            pencil_paste_clipboard(&pencil_input_util);
         } else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) {
             // commit color change
             if (pencil_mode == PENCIL_MODE_INPUT_COLOR) pencil_color = (hex_parse_hex_str(pencil_input_util.buff) << 8) | (pencil_color & 0xff) ;

@@ -4,6 +4,20 @@
 #include "hex.h"
 #include "fonts.h"
 #include "input_util.h"
+#include <SDL2/SDL_clipboard.h>
+
+static void marker_paste_clipboard(input_util_t* iu) {
+    if (!SDL_HasClipboardText()) return;
+    char* text = SDL_GetClipboardText();
+    if (!text) return;
+    input_util_wipe(iu);
+    for (int i = 0; text[i] != '\0'; i++) {
+        char c = text[i];
+        if (c >= 'A' && c <= 'F') c = c - 'A' + 'a';
+        if (iu->key_filter(c)) INPUT_UTIL_ADD(iu, c);
+    }
+    SDL_free(text);
+}
 
 #define STR_ON "on"
 #define STR_OFF "off"
@@ -79,10 +93,10 @@ static uint8_t marker_handle_keydown(SDL_KeyboardEvent* evt) {
 
     } else if (marker_mode == MARKER_MODE_INPUT_COLOR || marker_mode == MARKER_MODE_INPUT_ALPHA) {
         if (evt->keysym.sym == SDLK_ESCAPE) {
-            // escape cancel color input
             marker_mode = MARKER_MODE_PLACE;
-
-        }  else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) { 
+        } else if ((evt->keysym.mod & KMOD_CTRL) && evt->keysym.sym == SDLK_v) {
+            marker_paste_clipboard(&marker_input_util);
+        } else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) { 
             // commit color change
             if (marker_mode == MARKER_MODE_INPUT_COLOR) marker_color = (hex_parse_hex_str(marker_input_util.buff)<<8) | (marker_color&0xff);
             else if (marker_mode == MARKER_MODE_INPUT_ALPHA) marker_color = (marker_color&(~0xff)) | hex_parse_hex_str(marker_input_util.buff);

@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <unistd.h>
 
 #include "rendering.h"
 #include "fonts.h"
 #include "image.h"
 #include "status_bar.h"
 #include "tools.h"
+#include "history.h"
 
 int main(int argc, char* argv[]) {
     rendering_init();
@@ -12,8 +14,10 @@ int main(int argc, char* argv[]) {
     fonts_init();
     tools_init();
     status_bar_init();
+    history_init();
 
     image_load(argc > 1 ? argv[1] : NULL);
+    history_push(); /* initial snapshot so undo can return to pristine state */
     rendering_handle_window_resized(); // make sure we "refresh" wnd_rect before starting our main loop
 
     // main loop...
@@ -44,12 +48,14 @@ int main(int argc, char* argv[]) {
         rendering_swap_screen();
     }
 
-    image_write_img_to_stdout();
+    if (!isatty(STDOUT_FILENO))
+        image_write_img_to_stdout();
 
     status_bar_deinit();
     tools_deinit();
     fonts_deinit();
     image_deinit();
+    history_deinit();
     rendering_deinit();
 
     return 0;

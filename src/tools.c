@@ -1,4 +1,5 @@
 #include "tools.h"
+#include "history.h"
 
 static tool_t* current_tool;
 
@@ -27,7 +28,14 @@ void tools_activate_tool(tool_t* tool) {
 uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
     uint8_t tool_handler_result = tool_handle_keydown(current_tool, evt);
     if (tool_handler_result <= 0) {
+        uint8_t ctrl = (evt->keysym.mod & KMOD_CTRL) != 0;
         switch(evt->keysym.sym) {
+            case SDLK_z:
+                if (ctrl) { history_undo(); return 1; }
+                break;
+            case SDLK_y:
+                if (ctrl) { history_redo(); return 1; }
+                break;
             case SDLK_ESCAPE:
                 tools_activate_tool(&tools_tool_none);
                 return 1;
@@ -40,6 +48,9 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
             case SDLK_m:
                 tools_activate_tool(&tools_tool_marker);
                 return 1;
+            case SDLK_r:
+                tools_activate_tool(&tools_tool_rect);
+                return 1;
         }
     } else {
         return tool_handler_result;
@@ -48,9 +59,23 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
 }
 
 uint8_t tools_handle_mouse_motion(SDL_MouseMotionEvent* evt) {
-    return tool_handle_mouse_motion(current_tool, evt);
+    uint8_t too_handler_result = tool_handle_mouse_motion(current_tool, evt);
+    if (too_handler_result <= 0) {
+
+    } else {
+        return too_handler_result;
+    }
+
+    return 0;
 }
 
 uint8_t tools_handle_mouse_click(SDL_MouseButtonEvent* evt) {
-    return tool_handle_mouse_click(current_tool, evt);
+    uint8_t tool_handler_result = tool_handle_mouse_click(current_tool, evt);
+    if (tool_handler_result <= 0) {
+
+    } else {
+        return tool_handler_result;
+    }
+
+    return 0;
 }

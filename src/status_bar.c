@@ -6,16 +6,16 @@
 static TTF_Font* status_bar_font = NULL;
 static SDL_Color status_bar_color = { .r = 0xff, .g = 0x0ff, .b = 0xff, .a = 0xff };
 
-void status_bar_init() {
+void status_bar_init(void) {
     status_bar_font = fonts_load_font("monospace", 11);
 }
 
-void status_bar_deinit() {
+void status_bar_deinit(void) {
     TTF_CloseFont(status_bar_font);
     status_bar_font = NULL;
 }
 
-void status_bar_render_bar() {
+void status_bar_render_bar(void) {
     // render our status bar background
     SDL_Rect status_bar_rect = {
         .x = 0,

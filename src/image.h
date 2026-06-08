@@ -11,27 +11,27 @@ extern SDL_Texture* img_edit_texture;
 /**
  * initialize the image module
  */
-void image_init();
+void image_init(void);
 
 /**
  * deinitialize the image module
  */
-void image_deinit();
+void image_deinit(void);
 
 /**
  * render the image and its "edit layer" to the center of our window
  */
-void image_render_img();
+void image_render_img(void);
 
 /**
- * read whatever data is available on stdin and try to interpret it as an image
- * this will initialize the img_orig_... and img_edit_... module var
+ * Load an image from a file path (if path != NULL) or from stdin.
+ * Initializes the img_orig_... and img_edit_... module vars.
  */
-SDL_Surface* image_read_img_from_stdin();
+SDL_Surface* image_load(const char* path);
 
 /**
  */
-void image_write_img_to_stdout();
+void image_write_img_to_stdout(void);
 
 
 /**
@@ -39,6 +39,6 @@ void image_write_img_to_stdout();
  * x/ y define the offset and width/height should match img_orig_surface's clip_rect
  * dimensions.
  */
-SDL_Rect image_get_offset_rect();
+SDL_Rect image_get_offset_rect(void);
 
 #endif

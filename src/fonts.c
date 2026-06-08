@@ -13,7 +13,7 @@ char* find_font_file(const char* pattern);
 
 
 
-void fonts_init() {
+void fonts_init(void) {
     if (TTF_Init() != 0) {
         fprintf(stderr, "could not initialize SDL ttf: %s\n", TTF_GetError());
         exit(-1);
@@ -23,7 +23,7 @@ void fonts_init() {
     fc = FcInitLoadConfigAndFonts();
 }
 
-void fonts_deinit() {
+void fonts_deinit(void) {
     FcConfigDestroy(fc);
     FcFini();
     TTF_Quit();

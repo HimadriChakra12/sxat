@@ -36,12 +36,12 @@ static input_util_t marker_input_util;
 
 
 
-static uint8_t marker_handle_activate() {
+static uint8_t marker_handle_activate(void) {
     SDL_ShowCursor(SDL_DISABLE);
     return 1;
 }
 
-static uint8_t marker_handle_deactivate() {
+static uint8_t marker_handle_deactivate(void) {
     SDL_ShowCursor(SDL_ENABLE);
     return 1;
 }
@@ -161,7 +161,7 @@ static uint8_t marker_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     return 0;
 }
 
-static void marker_render_ghost() {
+static void marker_render_ghost(void) {
     int32_t mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
 
@@ -172,7 +172,7 @@ static void marker_render_ghost() {
     rendering_draw_circle(point_rect.x, point_rect.y, marker_size, 0, 0, 0, 0xa0, SDL_BLENDMODE_BLEND);
 }
 
-static char* marker_provide_status_bar_text() {
+static char* marker_provide_status_bar_text(void) {
     switch(marker_mode) {
         case MARKER_MODE_PLACE:
             sprintf(marker_status_bar_buff, "[marker] | color = #%06x | alpha = #%02x | number = %d | size = %d | auto-increment = %s", 

@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
     tools_init();
     status_bar_init();
 
-    image_read_img_from_stdin();
+    image_load(argc > 1 ? argv[1] : NULL);
     rendering_handle_window_resized(); // make sure we "refresh" wnd_rect before starting our main loop
 
     // main loop...

@@ -9,16 +9,16 @@
 /**
  * initialize the status bar module
  */
-void status_bar_init();
+void status_bar_init(void);
 
 /**
  * deinitialize the status bar module
  */
-void status_bar_deinit();
+void status_bar_deinit(void);
 
 /**
  */
-void status_bar_render_bar();
+void status_bar_render_bar(void);
 
 
 #endif

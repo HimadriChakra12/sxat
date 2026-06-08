@@ -11,15 +11,15 @@ extern SDL_Window* wnd;
 extern SDL_Rect wnd_rect;
 extern SDL_Renderer* rend;
 
-void rendering_init();
+void rendering_init(void);
 
-void rendering_deinit();
+void rendering_deinit(void);
 
-void rendering_handle_window_resized();
+void rendering_handle_window_resized(void);
 
-void rendering_wipe_screen();
+void rendering_wipe_screen(void);
 
-void rendering_swap_screen();
+void rendering_swap_screen(void);
 
 void rendering_draw_circle(uint32_t center_x, uint32_t center_y, uint32_t radius, uint8_t r, uint8_t g, uint8_t b, uint8_t a, SDL_BlendMode blend_mode);
 

@@ -8,13 +8,13 @@ static uint8_t eraser_size = 8;
 
 static SDL_Texture* eraser_edit_texture = NULL;
 
-static void wipe_eraser_edit_texture() {
+static void wipe_eraser_edit_texture(void) {
     SDL_SetRenderTarget(rend, eraser_edit_texture);
     SDL_RenderCopy(rend, img_edit_texture, NULL, NULL);
     SDL_SetRenderTarget(rend, NULL);
 }
 
-static uint8_t tools_tool_eraser_handle_activate() {
+static uint8_t tools_tool_eraser_handle_activate(void) {
     SDL_ShowCursor(SDL_DISABLE);
 
     // lazyily initialize our edit texture
@@ -28,7 +28,7 @@ static uint8_t tools_tool_eraser_handle_activate() {
     return 1;
 }
 
-static uint8_t tools_tool_eraser_handle_deactivate() {
+static uint8_t tools_tool_eraser_handle_deactivate(void) {
     SDL_ShowCursor(SDL_ENABLE);
     return 1;
 }
@@ -89,12 +89,12 @@ static uint8_t tools_tool_eraser_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     return 0;
 }
 
-static char* tools_tool_eraser_provide_status_bar_text() {
+static char* tools_tool_eraser_provide_status_bar_text(void) {
     sprintf(status_bar_buff, "[eraser] | eraser size = %d", eraser_size);
     return status_bar_buff;
 }
 
-static void tools_tool_eraser_render_ghost() {
+static void tools_tool_eraser_render_ghost(void) {
     int32_t mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
 

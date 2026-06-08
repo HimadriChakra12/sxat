@@ -11,11 +11,11 @@ typedef uint8_t (*tool_mouse_motion_handler)(SDL_MouseMotionEvent* evt);
 
 typedef uint8_t (*tool_mouse_click_handler)(SDL_MouseButtonEvent* evt);
 
-typedef uint8_t (*tool_func_with_status)();
+typedef uint8_t (*tool_func_with_status)(void);
 
-typedef void (*tool_func)();
+typedef void (*tool_func)(void);
 
-typedef char* (*tool_status_bar_text_provider)();
+typedef char* (*tool_status_bar_text_provider)(void);
 
 
 /**

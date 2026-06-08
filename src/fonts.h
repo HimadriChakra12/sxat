@@ -7,12 +7,12 @@
 /**
  * initialize the fonts module (this will initialize SDL_ttf and fontconfig)
  */
-void fonts_init();
+void fonts_init(void);
 
 /**
  * deinitialize the fonts module
  */
-void fonts_deinit();
+void fonts_deinit(void);
 
 /**
  * load a font file using font-config to find the actual font.

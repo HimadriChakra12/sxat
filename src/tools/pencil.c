@@ -24,7 +24,7 @@ static SDL_Texture* pencil_edit_texture = NULL;
 
 
 
-static void wipe_pencil_edit_texture() {
+static void wipe_pencil_edit_texture(void) {
     SDL_SetRenderTarget(rend, pencil_edit_texture);
     SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);
     SDL_SetRenderDrawColor(rend, 0, 0, 0, 0x00);
@@ -32,7 +32,7 @@ static void wipe_pencil_edit_texture() {
     SDL_SetRenderTarget(rend, NULL);
 }
 
-static uint8_t tools_tool_pencil_handle_activate() {
+static uint8_t tools_tool_pencil_handle_activate(void) {
     SDL_ShowCursor(SDL_DISABLE);
     pencil_mode = PENCIL_MODE_DRAW;
 
@@ -47,7 +47,7 @@ static uint8_t tools_tool_pencil_handle_activate() {
     return 1;
 }
 
-static uint8_t tools_tool_pencil_handle_deactivate() {
+static uint8_t tools_tool_pencil_handle_deactivate(void) {
     SDL_ShowCursor(SDL_ENABLE);
     return 1;
 }
@@ -144,7 +144,7 @@ static uint8_t tools_tool_pencil_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     return 0;
 }
 
-static char* tools_tool_pencil_provide_status_bar_text() {
+static char* tools_tool_pencil_provide_status_bar_text(void) {
     if (pencil_mode == PENCIL_MODE_DRAW) {
         sprintf(status_bar_buff, "[pencil] | color = #%06x | alpha = #%02x | pencil size = %d", pencil_color>>8, pencil_color & 0xff, pencil_size);
     } else if (pencil_mode == PENCIL_MODE_INPUT_COLOR) {
@@ -156,7 +156,7 @@ static char* tools_tool_pencil_provide_status_bar_text() {
     return status_bar_buff;
 }
 
-static void tools_tool_pencil_render_ghost() {
+static void tools_tool_pencil_render_ghost(void) {
     int32_t mouse_x, mouse_y;
     SDL_GetMouseState(&mouse_x, &mouse_y);
 
@@ -184,4 +184,3 @@ tool_t tools_tool_pencil = {
     .status_bar_text_provider = tools_tool_pencil_provide_status_bar_text,
     .ghost_renderer = tools_tool_pencil_render_ghost
 };
-

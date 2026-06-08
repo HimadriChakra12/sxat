@@ -15,25 +15,25 @@ extern tool_t tools_tool_marker;
 /**
  * initialize the tools module
  */
-void tools_init();
+void tools_init(void);
 
 
 /**
  * deinitialize the tools module
  */
-void tools_deinit();
+void tools_deinit(void);
 
 /**
  * generates status bar text content for the current mode
  * the caller must free the returned char*
  */
-char* tools_get_status_bar_text();
+char* tools_get_status_bar_text(void);
 
 /**
  * renders the active tool's ghost to the window. keep in mind some tools
  * have no ghost and in  that case nothing will be rendered...
  */
-void tools_render_tool_ghost();
+void tools_render_tool_ghost(void);
 
 /**
  * make the provided tool the active tool. NULL values are ignored.

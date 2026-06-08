@@ -10,7 +10,7 @@ uint8_t tool_handle_deactivate(tool_t* tool) {
     return 0;
 }
 
-uint8_t tool_handle_keydown(tool_t* tool, SDL_KeyboardEvent* evt)  {
+uint8_t tool_handle_keydown(tool_t* tool, SDL_KeyboardEvent* evt) {
     if (tool != NULL && tool->keydown_handler != NULL) return tool->keydown_handler(evt);
     return 0;
 }

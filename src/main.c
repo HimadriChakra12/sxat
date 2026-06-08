@@ -7,6 +7,7 @@
 #include "status_bar.h"
 #include "tools.h"
 #include "history.h"
+#include "../config.h"
 
 int main(int argc, char* argv[]) {
     rendering_init();
@@ -29,7 +30,7 @@ int main(int argc, char* argv[]) {
         } else if (evt.type == SDL_KEYDOWN) {
             event_handler_result = tools_handle_keydown(&evt.key);
             if (event_handler_result == 0) {
-                if (evt.key.keysym.sym == SDLK_q) break;
+                if (evt.key.keysym.sym == CFG_KEY_QUIT) break;
             }
         } else if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
             tools_handle_mouse_click(&evt.button);

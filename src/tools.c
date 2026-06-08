@@ -1,5 +1,6 @@
 #include "tools.h"
 #include "history.h"
+#include "../config.h"
 
 static tool_t* current_tool;
 
@@ -30,25 +31,25 @@ uint8_t tools_handle_keydown(SDL_KeyboardEvent* evt) {
     if (tool_handler_result <= 0) {
         uint8_t ctrl = (evt->keysym.mod & KMOD_CTRL) != 0;
         switch(evt->keysym.sym) {
-            case SDLK_z:
+            case CFG_KEY_UNDO:
                 if (ctrl) { history_undo(); return 1; }
                 break;
-            case SDLK_y:
+            case CFG_KEY_REDO:
                 if (ctrl) { history_redo(); return 1; }
                 break;
-            case SDLK_ESCAPE:
+            case CFG_KEY_TOOL_NONE:
                 tools_activate_tool(&tools_tool_none);
                 return 1;
-            case SDLK_p:
+            case CFG_KEY_TOOL_PENCIL:
                 tools_activate_tool(&tools_tool_pencil);
                 return 1;
-            case SDLK_e:
+            case CFG_KEY_TOOL_ERASER:
                 tools_activate_tool(&tools_tool_eraser);
                 return 1;
-            case SDLK_m:
+            case CFG_KEY_TOOL_MARKER:
                 tools_activate_tool(&tools_tool_marker);
                 return 1;
-            case SDLK_r:
+            case CFG_KEY_TOOL_RECT:
                 tools_activate_tool(&tools_tool_rect);
                 return 1;
         }

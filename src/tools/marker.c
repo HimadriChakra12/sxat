@@ -1,4 +1,5 @@
 #include "tool.h"
+#include "../../config.h"
 #include "rendering.h"
 #include "image.h"
 #include "hex.h"
@@ -40,11 +41,11 @@ static char marker_status_bar_buff[128] = "\0";
 
 static uint8_t marker_auto_increment = ~0;
 
-static uint32_t marker_color = 0x000000ff;
+static uint32_t marker_color = CFG_MARKER_DEFAULT_COLOR;
 
 static uint32_t marker_number = 1;
 
-static uint32_t marker_size = 12;
+static uint32_t marker_size = CFG_MARKER_DEFAULT_SIZE;
 
 static input_util_t marker_input_util;
 
@@ -63,30 +64,30 @@ static uint8_t marker_handle_deactivate(void) {
 static uint8_t marker_handle_keydown(SDL_KeyboardEvent* evt) {
     if (marker_mode == MARKER_MODE_PLACE) {
         switch(evt->keysym.sym) {
-            case SDLK_LEFTBRACKET:
+            case CFG_KEY_SIZE_DEC:
                 marker_size = MAX(1, marker_size-1);
                 return 1;
-            case SDLK_RIGHTBRACKET:
+            case CFG_KEY_SIZE_INC:
                 marker_size = MIN(0xff, marker_size+1);
                 return 1;
-            case SDLK_SEMICOLON:
+            case CFG_KEY_MARKER_NUM_PREV:
                 marker_number = PREV_MARKER_NUMBER;
                 return 1;
-            case SDLK_QUOTE:
+            case CFG_KEY_MARKER_NUM_NEXT:
                 marker_number = NEXT_MARKER_NUMBER;
                 return 1;
-            case SDLK_PERIOD:
+            case CFG_KEY_MARKER_NUM_RESET:
                 marker_number = 1;
                 return 1;
-            case SDLK_a:
+            case CFG_KEY_ALPHA_INPUT:
                 input_util_reset(&marker_input_util, 2, input_util_hex_key_filter);
                 marker_mode = MARKER_MODE_INPUT_ALPHA;
                 return 1;
-            case SDLK_c:
+            case CFG_KEY_COLOR_INPUT:
                 input_util_reset(&marker_input_util, 6, input_util_hex_key_filter);
                 marker_mode = MARKER_MODE_INPUT_COLOR;
                 return 1;
-            case SDLK_i:
+            case CFG_KEY_MARKER_AUTO_INC:
                 marker_auto_increment = ~marker_auto_increment;
                 return 1;
         }
@@ -94,7 +95,7 @@ static uint8_t marker_handle_keydown(SDL_KeyboardEvent* evt) {
     } else if (marker_mode == MARKER_MODE_INPUT_COLOR || marker_mode == MARKER_MODE_INPUT_ALPHA) {
         if (evt->keysym.sym == SDLK_ESCAPE) {
             marker_mode = MARKER_MODE_PLACE;
-        } else if ((evt->keysym.mod & KMOD_CTRL) && evt->keysym.sym == SDLK_v) {
+        } else if ((evt->keysym.mod & KMOD_CTRL) && evt->keysym.sym == CFG_KEY_PASTE) {
             marker_paste_clipboard(&marker_input_util);
         } else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) { 
             // commit color change

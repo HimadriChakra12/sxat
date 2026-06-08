@@ -1,13 +1,14 @@
 #include "rendering.h"
 #include "status_bar.h"
 #include "tools.h"
+#include "../config.h"
 #include <SDL2/SDL_ttf.h>
 
 static TTF_Font* status_bar_font = NULL;
-static SDL_Color status_bar_color = { .r = 0xff, .g = 0x0ff, .b = 0xff, .a = 0xff };
+static SDL_Color status_bar_color = { .r = CFG_BAR_FG_R, .g = CFG_BAR_FG_G, .b = CFG_BAR_FG_B, .a = CFG_BAR_FG_A };
 
 void status_bar_init(void) {
-    status_bar_font = fonts_load_font("monospace", 11);
+    status_bar_font = fonts_load_font(CFG_BAR_FONT, CFG_BAR_FONTSIZE);
 }
 
 void status_bar_deinit(void) {
@@ -19,11 +20,11 @@ void status_bar_render_bar(void) {
     // render our status bar background
     SDL_Rect status_bar_rect = {
         .x = 0,
-        .y = wnd_rect.h - STATUS_BAR_HEIGHT,
+        .y = wnd_rect.h - CFG_BAR_HEIGHT,
         .w = wnd_rect.w,
-        .h = STATUS_BAR_HEIGHT,
+        .h = CFG_BAR_HEIGHT,
     };
-    SDL_SetRenderDrawColor(rend, 0, 0, 0, 0xff);
+    SDL_SetRenderDrawColor(rend, CFG_BAR_BG_R, CFG_BAR_BG_G, CFG_BAR_BG_B, CFG_BAR_BG_A);
     SDL_RenderFillRect(rend, &status_bar_rect);
 
     // generate status bar text and if there is any render it on the status bar...

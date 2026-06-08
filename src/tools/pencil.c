@@ -3,6 +3,7 @@
 #include "image.h"
 #include "hex.h"
 #include "input_util.h"
+#include "../../config.h"
 #include <SDL2/SDL_clipboard.h>
 
 static void pencil_paste_clipboard(input_util_t* iu) {
@@ -30,9 +31,9 @@ static input_util_t pencil_input_util;
 
 static char status_bar_buff[128] = "\0";
 
-static uint8_t pencil_size = 8;
+static uint8_t pencil_size = CFG_PENCIL_DEFAULT_SIZE;
 
-static uint32_t pencil_color = 0xffffffff;
+static uint32_t pencil_color = CFG_PENCIL_DEFAULT_COLOR;
 
 static SDL_Texture* pencil_edit_texture = NULL;
 
@@ -67,13 +68,13 @@ static uint8_t tools_tool_pencil_handle_deactivate(void) {
 }
 
 static uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
-    if (evt->keysym.sym == SDLK_q) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
+    if (evt->keysym.sym == CFG_KEY_QUIT) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
 
     // if we're in "color input mode" we'll basically swallow all keypresses as well
     if (pencil_mode == PENCIL_MODE_INPUT_COLOR || pencil_mode == PENCIL_MODE_INPUT_ALPHA) {
         if (evt->keysym.sym == SDLK_ESCAPE) {
             pencil_mode = PENCIL_MODE_DRAW;
-        } else if ((evt->keysym.mod & KMOD_CTRL) && evt->keysym.sym == SDLK_v) {
+        } else if ((evt->keysym.mod & KMOD_CTRL) && evt->keysym.sym == CFG_KEY_PASTE) {
             pencil_paste_clipboard(&pencil_input_util);
         } else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) {
             // commit color change
@@ -89,22 +90,22 @@ static uint8_t tools_tool_pencil_handle_keydown(SDL_KeyboardEvent* evt) {
     }
 
     switch(evt->keysym.sym) {
-        case SDLK_LEFTBRACKET:
+        case CFG_KEY_SIZE_DEC:
             // reduce pencil size
             pencil_size = pencil_size == 1 ? 1 : pencil_size - 1;
             return 1;
 
-        case SDLK_RIGHTBRACKET:
+        case CFG_KEY_SIZE_INC:
             // increase pencil size
             pencil_size = pencil_size == 0xff ? 0xff : pencil_size + 1;
             return 1;
 
-        case SDLK_a:
+        case CFG_KEY_ALPHA_INPUT:
             pencil_mode = PENCIL_MODE_INPUT_ALPHA;
             input_util_reset(&pencil_input_util, 2, input_util_hex_key_filter);
             break;
 
-        case SDLK_c:
+        case CFG_KEY_COLOR_INPUT:
             // change pencil color
             pencil_mode = PENCIL_MODE_INPUT_COLOR;
             input_util_reset(&pencil_input_util, 6, input_util_hex_key_filter);

@@ -1,10 +1,11 @@
 #include "tool.h"
+#include "../../config.h"
 #include "image.h"
 #include "rendering.h"
 
 static char status_bar_buff[32] = "\0";
 
-static uint8_t eraser_size = 8;
+static uint8_t eraser_size = CFG_ERASER_DEFAULT_SIZE;
 
 static SDL_Texture* eraser_edit_texture = NULL;
 
@@ -34,15 +35,15 @@ static uint8_t tools_tool_eraser_handle_deactivate(void) {
 }
 
 static uint8_t tools_tool_eraser_handle_keydown(SDL_KeyboardEvent* evt) {
-    if (evt->keysym.sym == SDLK_q) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
+    if (evt->keysym.sym == CFG_KEY_QUIT) return 1; // swallow 'q' keypresses which otherwise would exit 10h0ch
 
     switch(evt->keysym.sym) {
-        case SDLK_LEFTBRACKET:
+        case CFG_KEY_SIZE_DEC:
             // reduce pencil size
             eraser_size = eraser_size == 1 ? 1 : eraser_size - 1;
             return 1;
 
-        case SDLK_RIGHTBRACKET:
+        case CFG_KEY_SIZE_INC:
             // increase pencil size
             eraser_size = eraser_size == 0xff ? 0xff : eraser_size + 1;
             return 1;

@@ -1,4 +1,5 @@
 #include "tool.h"
+#include "../../config.h"
 #include "rendering.h"
 #include "image.h"
 #include "history.h"
@@ -17,9 +18,9 @@ static rect_mode_t  rect_mode     = RECT_MODE_DRAW;
 static input_util_t rect_input_util;
 static char         status_bar_buff[192] = "\0";
 
-static uint32_t rect_color    = 0xff0000ff; /* RRGGBBAA */
+static uint32_t rect_color    = CFG_RECT_DEFAULT_COLOR;
 static uint8_t  rect_filled   = 0;
-static uint8_t  rect_thickness = 1;
+static uint8_t  rect_thickness = CFG_RECT_DEFAULT_THICKNESS;
 static int32_t  drag_start_x  = -1;
 static int32_t  drag_start_y  = -1;
 static int32_t  drag_cur_x    = -1;
@@ -55,7 +56,7 @@ static uint8_t rect_handle_deactivate(void) {
 }
 
 static uint8_t rect_handle_keydown(SDL_KeyboardEvent* evt) {
-    if (evt->keysym.sym == SDLK_q) return 1;
+    if (evt->keysym.sym == CFG_KEY_QUIT) return 1;
 
     uint8_t ctrl = (evt->keysym.mod & KMOD_CTRL) != 0;
 
@@ -63,7 +64,7 @@ static uint8_t rect_handle_keydown(SDL_KeyboardEvent* evt) {
     if (rect_mode == RECT_MODE_INPUT_COLOR || rect_mode == RECT_MODE_INPUT_ALPHA) {
         if (evt->keysym.sym == SDLK_ESCAPE) {
             rect_mode = RECT_MODE_DRAW;
-        } else if (ctrl && evt->keysym.sym == SDLK_v) {
+        } else if (ctrl && evt->keysym.sym == CFG_KEY_PASTE) {
             paste_clipboard(&rect_input_util);
         } else if (evt->keysym.sym == SDLK_RETURN || evt->keysym.sym == SDLK_RETURN2) {
             if (rect_mode == RECT_MODE_INPUT_COLOR)
@@ -78,24 +79,24 @@ static uint8_t rect_handle_keydown(SDL_KeyboardEvent* evt) {
     }
 
     switch (evt->keysym.sym) {
-        case SDLK_f:
+        case CFG_KEY_RECT_TOGGLE_FILL:
             rect_filled = !rect_filled;
             return 1;
 
-        case SDLK_LEFTBRACKET:
+        case CFG_KEY_SIZE_DEC:
             if (rect_thickness > 1) rect_thickness--;
             return 1;
 
-        case SDLK_RIGHTBRACKET:
+        case CFG_KEY_SIZE_INC:
             if (rect_thickness < 64) rect_thickness++;
             return 1;
 
-        case SDLK_c:
+        case CFG_KEY_COLOR_INPUT:
             rect_mode = RECT_MODE_INPUT_COLOR;
             input_util_reset(&rect_input_util, 6, input_util_hex_key_filter);
             return 1;
 
-        case SDLK_a:
+        case CFG_KEY_ALPHA_INPUT:
             rect_mode = RECT_MODE_INPUT_ALPHA;
             input_util_reset(&rect_input_util, 2, input_util_hex_key_filter);
             return 1;

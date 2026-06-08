@@ -1,4 +1,4 @@
-target:=bin/10h0ch
+target:=sxat
 
 src_dir := src
 obj_dir := .o
@@ -21,3 +21,5 @@ CFLAGS = -Wall -g -std=c99 -pedantic \
 LDFLAGS = $(shell $(PKGCONFIG) --libs sdl2 SDL2_image SDL2_ttf) \
 		  $(shell $(PKGCONFIG) --libs fontconfig) \
 		  $(shell $(PKGCONFIG) --libs libpng)
+
+APP :=/usr/local/bin/

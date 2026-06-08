@@ -22,7 +22,9 @@ clean:
 	rm -rf $(obj_dir)/*
 	rm -f $(target)
 
+install: $(target)
+	cp -f $(target) $(APP)
 
-.PHONY: all clean
+.PHONY: all clean install
 
 include $(deps)

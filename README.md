@@ -1,20 +1,22 @@
-# 10h0ch
+# SXAT
 
-simplistic image annotation tool
+Simple X (image) Annotation Tool
 
-10h0ch will read whatever image (jpeg, png or TIFF) from stdin and render it in its window. basic tools to modify the image
-are provided, e.g. pencils/erarser, text, ... On exit 10h0ch will dump the edited version of the image to
+SXAT will read whatever image (jpeg, png or TIFF) from stdin and render it in its window. basic tools to modify the image
+are provided, e.g. pencils/erarser, text, ... On exit SXAT will dump the edited version of the image to
 stdout as a PNG file.
 
 ### basic usage
 
 ```
-10h0ch <path/to/some/image.png > annotated-image.png
+sxat /path/to/some/image.png > annotated-image.png
 ```
 
-### keybinds
+### Additions
+1. config.h
+2. rectangle
 
-keybinds are hardcoded (for now).
+### keybinds
 
 note that "exit" only works in "normal mode".
 
@@ -24,6 +26,7 @@ note that "exit" only works in "normal mode".
 | eraser      | e    |
 | marker      | m    |
 | pencil      | p    |
+| rectangle   | r    |
 | exit        | q    |
 
 #### pencil tool
@@ -54,3 +57,12 @@ note that "exit" only works in "normal mode".
 | change marker color   | c   |
 | toggle auto-increment | i   |
 
+#### rectangle tool
+
+| action                        | key |
+| --                            | --  |
+| decrease border thickness     | [   |
+| increase border thickness     | ]   |
+| fill                          | f   |
+| change marker alpha           | a   |
+| change marker color           | c   |

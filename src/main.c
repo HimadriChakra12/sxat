@@ -63,10 +63,22 @@ static void do_save(void) {
         fprintf(stderr, "save failed: %s\n", last_saved_path);
 }
 
-static void do_copy_path(void) {
-    if (last_saved_path[0] == '\0') do_save();
-    SDL_SetClipboardText(last_saved_path);
-    fprintf(stderr, "path copied: %s\n", last_saved_path);
+static void do_copy_image(void) {
+    /* write to a temp file then pipe to xclip */
+    char tmp[] = "/tmp/liau_copy_XXXXXX.png";
+    /* mkstemp doesn't support suffix so just use a fixed tmp path */
+    snprintf(tmp, sizeof(tmp), "/tmp/liau_copy_%d.png", (int)getpid());
+    if (image_write_img_to_file(tmp) != 0) {
+        fprintf(stderr, "copy: failed to write temp file\n");
+        return;
+    }
+    char cmd[1200];
+    snprintf(cmd, sizeof(cmd),
+        "xclip -selection clipboard -t image/png < \"%s\" && rm -f \"%s\"", tmp, tmp);
+    if (system(cmd) == 0)
+        fprintf(stderr, "image copied to clipboard\n");
+    else
+        fprintf(stderr, "copy failed — is xclip installed?\n");
 }
 
 /* detect if stdin has data without blocking (for screenshot tool pipes) */
@@ -87,7 +99,17 @@ int main(int argc, char* argv[]) {
     status_bar_init();
     history_init();
 
-    const char* path = (argc > 1) ? argv[1] : NULL;
+    /* support:
+     *   liau image.png          (argv[1] = path)
+     *   liau -f image.png       (swappy-compatible, argv[1]="-f" argv[2]=path)
+     *   cat image.png | liau    (stdin pipe)
+     */
+    const char* path = NULL;
+    if (argc >= 3 && strcmp(argv[1], "-f") == 0) {
+        path = argv[2];
+    } else if (argc >= 2) {
+        path = argv[1];
+    }
 
     /* accept stdin pipe only if data is actually available */
     if (path == NULL && !stdin_has_data()) {
@@ -118,7 +140,7 @@ int main(int argc, char* argv[]) {
             if (ctrl && evt.key.keysym.sym == CFG_KEY_SAVE) {
                 do_save();
             } else if (ctrl && evt.key.keysym.sym == CFG_KEY_COPY) {
-                do_copy_path();
+                do_copy_image();
             } else {
                 if (tools_handle_keydown(&evt.key) == 0)
                     if (evt.key.keysym.sym == CFG_KEY_QUIT) break;

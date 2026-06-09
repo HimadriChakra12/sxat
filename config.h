@@ -9,8 +9,8 @@
  * Ctrl+S saves, Ctrl+W copies the saved path to clipboard.
  * ------------------------------------------------------------------------- */
 #define CFG_SAVE_DIR   "~/.sxa"
-#define CFG_KEY_SAVE   SDLK_s   /* Ctrl + this -> save to CFG_SAVE_DIR      */
-#define CFG_KEY_COPY   SDLK_w   /* Ctrl + this -> copy saved path to clipboard */
+#define CFG_KEY_SAVE   SDLK_s   /* Ctrl + this -> save to CFG_SAVE_DIR       */
+#define CFG_KEY_COPY   SDLK_w   /* Ctrl + this -> copy image to clipboard     */
 
 /* -------------------------------------------------------------------------
  * STATUS BAR

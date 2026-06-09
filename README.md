@@ -9,12 +9,14 @@ stdout as a PNG file.
 ### basic usage
 
 ```
-sxat /path/to/some/image.png > annotated-image.png
+sxat (-f/p/r/m) /path/to/some/image.png > annotated-image.png
 ```
 
 ### Additions
 1. config.h
 2. rectangle
+3. fullscreen mode (-f)
+4. tool modes (-p/-r/-m)
 
 ### keybinds
 

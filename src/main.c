@@ -1,5 +1,11 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/select.h>
+#include <errno.h>
 
 #include "rendering.h"
 #include "fonts.h"
@@ -9,6 +15,70 @@
 #include "history.h"
 #include "../config.h"
 
+#include <SDL2/SDL_clipboard.h>
+
+/* expand leading ~ to $HOME */
+static void expand_path(const char* in, char* out, size_t outsz) {
+    if (in[0] == '~') {
+        const char* home = getenv("HOME");
+        if (!home) home = "";
+        snprintf(out, outsz, "%s%s", home, in + 1);
+    } else {
+        snprintf(out, outsz, "%s", in);
+    }
+}
+
+static void mkdirp(const char* path) {
+    char tmp[1024];
+    snprintf(tmp, sizeof(tmp), "%s", path);
+    for (char* p = tmp + 1; *p; p++) {
+        if (*p == '/') { *p = '\0'; mkdir(tmp, 0755); *p = '/'; }
+    }
+    mkdir(tmp, 0755);
+}
+
+static void build_save_path(const char* dir, char* out, size_t outsz) {
+    time_t t = time(NULL);
+    struct tm* tm = localtime(&t);
+    char base[256];
+    strftime(base, sizeof(base), "liau_%Y%m%d_%H%M%S", tm);
+    snprintf(out, outsz, "%s/%s.png", dir, base);
+    if (access(out, F_OK) != 0) return;
+    for (int n = 1; n < 10000; n++) {
+        snprintf(out, outsz, "%s/%s_%d.png", dir, base, n);
+        if (access(out, F_OK) != 0) return;
+    }
+}
+
+static char last_saved_path[1024] = "";
+
+static void do_save(void) {
+    char dir[1024];
+    expand_path(CFG_SAVE_DIR, dir, sizeof(dir));
+    mkdirp(dir);
+    build_save_path(dir, last_saved_path, sizeof(last_saved_path));
+    if (image_write_img_to_file(last_saved_path) == 0)
+        fprintf(stderr, "saved: %s\n", last_saved_path);
+    else
+        fprintf(stderr, "save failed: %s\n", last_saved_path);
+}
+
+static void do_copy_path(void) {
+    if (last_saved_path[0] == '\0') do_save();
+    SDL_SetClipboardText(last_saved_path);
+    fprintf(stderr, "path copied: %s\n", last_saved_path);
+}
+
+/* detect if stdin has data without blocking (for screenshot tool pipes) */
+static int stdin_has_data(void) {
+    if (isatty(STDIN_FILENO)) return 0;
+    fd_set fds;
+    FD_ZERO(&fds);
+    FD_SET(STDIN_FILENO, &fds);
+    struct timeval tv = { 0, 0 };
+    return select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv) > 0;
+}
+
 int main(int argc, char* argv[]) {
     rendering_init();
     image_init();
@@ -17,35 +87,54 @@ int main(int argc, char* argv[]) {
     status_bar_init();
     history_init();
 
-    image_load(argc > 1 ? argv[1] : NULL);
-    history_push(); /* initial snapshot so undo can return to pristine state */
-    rendering_handle_window_resized(); // make sure we "refresh" wnd_rect before starting our main loop
+    const char* path = (argc > 1) ? argv[1] : NULL;
 
-    // main loop...
+    /* accept stdin pipe only if data is actually available */
+    if (path == NULL && !stdin_has_data()) {
+        /* block-wait a moment for slow pipes (screenshot tools may take ms) */
+        fd_set fds;
+        FD_ZERO(&fds);
+        FD_SET(STDIN_FILENO, &fds);
+        struct timeval tv = { 1, 0 }; /* 1 second timeout */
+        int ready = !isatty(STDIN_FILENO)
+                    ? select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv)
+                    : 0;
+        if (ready <= 0) {
+            fprintf(stderr, "usage: liau <image>\n       screenshot_tool | liau\n");
+            return 1;
+        }
+    }
+
+    image_load(path);
+    history_push();
+    rendering_handle_window_resized();
+
     SDL_Event evt;
-    uint8_t event_handler_result = 0;
-    while(SDL_WaitEvent(&evt)) {
+    while (SDL_WaitEvent(&evt)) {
         if (evt.type == SDL_QUIT) {
             break;
         } else if (evt.type == SDL_KEYDOWN) {
-            event_handler_result = tools_handle_keydown(&evt.key);
-            if (event_handler_result == 0) {
-                if (evt.key.keysym.sym == CFG_KEY_QUIT) break;
+            uint8_t ctrl = (evt.key.keysym.mod & KMOD_CTRL) != 0;
+            if (ctrl && evt.key.keysym.sym == CFG_KEY_SAVE) {
+                do_save();
+            } else if (ctrl && evt.key.keysym.sym == CFG_KEY_COPY) {
+                do_copy_path();
+            } else {
+                if (tools_handle_keydown(&evt.key) == 0)
+                    if (evt.key.keysym.sym == CFG_KEY_QUIT) break;
             }
         } else if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
             tools_handle_mouse_click(&evt.button);
-        } else if (evt.type ==  SDL_MOUSEMOTION) {
+        } else if (evt.type == SDL_MOUSEMOTION) {
             tools_handle_mouse_motion(&evt.motion);
         } else if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_RESIZED) {
             rendering_handle_window_resized();
         }
 
         rendering_wipe_screen();
-
         image_render_img();
         tools_render_tool_ghost();
         status_bar_render_bar();
-
         rendering_swap_screen();
     }
 
@@ -58,6 +147,5 @@ int main(int argc, char* argv[]) {
     image_deinit();
     history_deinit();
     rendering_deinit();
-
     return 0;
 }

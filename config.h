@@ -4,25 +4,32 @@
 #define _10h0ch_config_h
 
 /* -------------------------------------------------------------------------
- * STATUS BAR
- * Colors are { R, G, B, A } in 0-255.
+ * SAVE / COPY
+ * CFG_SAVE_DIR : directory for saved annotated images (tilde expanded).
+ * Ctrl+S saves, Ctrl+W copies the saved path to clipboard.
  * ------------------------------------------------------------------------- */
-#define CFG_BAR_BG_R   0
-#define CFG_BAR_BG_G   0
-#define CFG_BAR_BG_B   0
-#define CFG_BAR_BG_A   255
-
-#define CFG_BAR_FG_R   255
-#define CFG_BAR_FG_G   255
-#define CFG_BAR_FG_B   255
-#define CFG_BAR_FG_A   255
-
-#define CFG_BAR_HEIGHT 23
-#define CFG_BAR_FONT   "monospace"
-#define CFG_BAR_FONTSIZE 11
+#define CFG_SAVE_DIR   "~/.sxa"
+#define CFG_KEY_SAVE   SDLK_s   /* Ctrl + this -> save to CFG_SAVE_DIR      */
+#define CFG_KEY_COPY   SDLK_w   /* Ctrl + this -> copy saved path to clipboard */
 
 /* -------------------------------------------------------------------------
- * GLOBAL KEYBINDS  (handled in tools.c before the active tool sees the key)
+ * STATUS BAR
+ * Colors as 0xRRGGBBAA hex literals.
+ * ------------------------------------------------------------------------- */
+#define CFG_BAR_BG     0x000000ff
+#define CFG_BAR_FG     0xffffffff
+#define CFG_BAR_HEIGHT   23
+#define CFG_BAR_FONT     "monospace"
+#define CFG_BAR_FONTSIZE 11
+
+/* helpers used by status_bar.c — do not edit */
+#define _CFG_R(c) (((c)>>24)&0xff)
+#define _CFG_G(c) (((c)>>16)&0xff)
+#define _CFG_B(c) (((c)>> 8)&0xff)
+#define _CFG_A(c) (((c)    )&0xff)
+
+/* -------------------------------------------------------------------------
+ * GLOBAL KEYBINDS
  * ------------------------------------------------------------------------- */
 #define CFG_KEY_QUIT          SDLK_q
 #define CFG_KEY_TOOL_NONE     SDLK_ESCAPE
@@ -35,7 +42,6 @@
 
 /* -------------------------------------------------------------------------
  * SHARED PER-TOOL KEYBINDS
- * Used by pencil, eraser, marker, rect.
  * ------------------------------------------------------------------------- */
 #define CFG_KEY_SIZE_DEC      SDLK_LEFTBRACKET
 #define CFG_KEY_SIZE_INC      SDLK_RIGHTBRACKET
@@ -59,6 +65,10 @@
  * ------------------------------------------------------------------------- */
 #define CFG_MARKER_DEFAULT_SIZE  12
 #define CFG_MARKER_DEFAULT_COLOR 0x000000ff /* RRGGBBAA */
+#define CFG_KEY_MARKER_NUM_PREV  SDLK_SEMICOLON
+#define CFG_KEY_MARKER_NUM_NEXT  SDLK_QUOTE
+#define CFG_KEY_MARKER_NUM_RESET SDLK_PERIOD
+#define CFG_KEY_MARKER_AUTO_INC  SDLK_i
 
 /* -------------------------------------------------------------------------
  * RECT TOOL
@@ -66,13 +76,5 @@
 #define CFG_RECT_DEFAULT_THICKNESS 1
 #define CFG_RECT_DEFAULT_COLOR     0xff0000ff /* RRGGBBAA */
 #define CFG_KEY_RECT_TOGGLE_FILL   SDLK_f
-
-/* -------------------------------------------------------------------------
- * MARKER TOOL
- * ------------------------------------------------------------------------- */
-#define CFG_KEY_MARKER_NUM_PREV   SDLK_SEMICOLON
-#define CFG_KEY_MARKER_NUM_NEXT   SDLK_QUOTE
-#define CFG_KEY_MARKER_NUM_RESET  SDLK_PERIOD
-#define CFG_KEY_MARKER_AUTO_INC   SDLK_i
 
 #endif

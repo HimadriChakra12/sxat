@@ -144,8 +144,6 @@ static void draw_rect_on_texture(SDL_Texture* tex,
 static uint8_t rect_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     if (evt->button != SDL_BUTTON_LEFT) return 0;
 
-    SDL_Rect img_rect = image_get_offset_rect();
-
     if (evt->state == SDL_PRESSED) {
         drag_start_x = evt->x;
         drag_start_y = evt->y;
@@ -158,18 +156,17 @@ static uint8_t rect_handle_mouse_click(SDL_MouseButtonEvent* evt) {
     if (evt->state == SDL_RELEASED && dragging) {
         dragging = 0;
 
-        int32_t x0 = drag_start_x - img_rect.x;
-        int32_t y0 = drag_start_y - img_rect.y;
-        int32_t x1 = evt->x       - img_rect.x;
-        int32_t y1 = evt->y       - img_rect.y;
+        int32_t x0, y0, x1, y1;
+        image_window_to_image(drag_start_x, drag_start_y, &x0, &y0);
+        image_window_to_image(evt->x, evt->y, &x1, &y1);
 
         if (x0 > x1) { int32_t t = x0; x0 = x1; x1 = t; }
         if (y0 > y1) { int32_t t = y0; y0 = y1; y1 = t; }
 
         if (x0 < 0) x0 = 0;
         if (y0 < 0) y0 = 0;
-        if (x1 > img_rect.w) x1 = img_rect.w;
-        if (y1 > img_rect.h) y1 = img_rect.h;
+        if (x1 > img_orig_surface->w) x1 = img_orig_surface->w;
+        if (y1 > img_orig_surface->h) y1 = img_orig_surface->h;
 
         if (x1 <= x0 || y1 <= y0) return 1;
 

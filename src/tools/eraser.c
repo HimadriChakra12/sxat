@@ -56,12 +56,11 @@ static uint8_t tools_tool_eraser_handle_mouse_motion(SDL_MouseMotionEvent* evt) 
     // do nothing if the left mouse button is not down...
     if ((evt->state & SDL_BUTTON_LMASK) != SDL_BUTTON_LMASK) return 0;
 
-    SDL_Rect img_rect = image_get_offset_rect();
-    int32_t edit_x = evt->x - img_rect.x;
-    int32_t edit_y = evt->y - img_rect.y;
+    int32_t edit_x, edit_y;
+    image_window_to_image(evt->x, evt->y, &edit_x, &edit_y);
 
-    if (edit_x < 0 || edit_x > img_rect.w) return 0; // out of bounds, can't draw outside our original image...
-    if (edit_y < 0 || edit_y > img_rect.h) return 0; // out of bounds, can't draw outside our original image...
+    if (edit_x < 0 || edit_x >= img_orig_surface->w) return 0;
+    if (edit_y < 0 || edit_y >= img_orig_surface->h) return 0;
 
     SDL_Rect point_rect = { .x = edit_x-eraser_size, .y = edit_y-eraser_size, .w = eraser_size, .h = eraser_size };
 

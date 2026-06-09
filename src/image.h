@@ -33,6 +33,9 @@ SDL_Surface* image_load(const char* path);
  */
 void image_write_img_to_stdout(void);
 
+/* write annotated image as PNG to the given file path. returns 0 on success. */
+int image_write_img_to_file(const char* path);
+
 
 /**
  * returns an SDL_Rect which defines the visible image region relative to the window.
@@ -40,5 +43,8 @@ void image_write_img_to_stdout(void);
  * dimensions.
  */
 SDL_Rect image_get_offset_rect(void);
+
+/* convert a window-space point to image-space (pixel coords in the image) */
+void image_window_to_image(int wx, int wy, int* ix, int* iy);
 
 #endif

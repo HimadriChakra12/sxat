@@ -99,37 +99,64 @@ int main(int argc, char* argv[]) {
     status_bar_init();
     history_init();
 
-    /* support:
-     *   liau image.png          (argv[1] = path)
-     *   liau -f image.png       (swappy-compatible, argv[1]="-f" argv[2]=path)
-     *   cat image.png | liau    (stdin pipe)
+    /* argument parsing:
+     *   liau <image>          plain open
+     *   liau -f <image>       open fullscreen  (swappy-compat / dihshot default)
+     *   liau -r <image>       open fullscreen + rect tool
+     *   liau -p <image>       open fullscreen + pencil tool
+     *   liau -m <image>       open fullscreen + marker tool
+     *   cat img | liau        stdin pipe
      */
-    const char* path = NULL;
-    if (argc >= 3 && strcmp(argv[1], "-f") == 0) {
-        path = argv[2];
-    } else if (argc >= 2) {
-        path = argv[1];
+    const char* path       = NULL;
+    int         fullscreen = 0;
+    tool_t*     start_tool = NULL;
+
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-f") == 0) {
+            fullscreen = 1;
+            if (i + 1 < argc) path = argv[++i];
+        } else if (strcmp(argv[i], "-r") == 0) {
+            fullscreen = 1;
+            start_tool = &tools_tool_rect;
+            if (i + 1 < argc) path = argv[++i];
+        } else if (strcmp(argv[i], "-p") == 0) {
+            fullscreen = 1;
+            start_tool = &tools_tool_pencil;
+            if (i + 1 < argc) path = argv[++i];
+        } else if (strcmp(argv[i], "-m") == 0) {
+            fullscreen = 1;
+            start_tool = &tools_tool_marker;
+            if (i + 1 < argc) path = argv[++i];
+        } else {
+            path = argv[i];
+        }
     }
 
     /* accept stdin pipe only if data is actually available */
     if (path == NULL && !stdin_has_data()) {
-        /* block-wait a moment for slow pipes (screenshot tools may take ms) */
         fd_set fds;
         FD_ZERO(&fds);
         FD_SET(STDIN_FILENO, &fds);
-        struct timeval tv = { 1, 0 }; /* 1 second timeout */
+        struct timeval tv = { 1, 0 };
         int ready = !isatty(STDIN_FILENO)
                     ? select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv)
                     : 0;
         if (ready <= 0) {
-            fprintf(stderr, "usage: liau <image>\n       screenshot_tool | liau\n");
+            fprintf(stderr, "usage: liau [-f|-r|-p|-m] <image>\n"
+                            "       -f  fullscreen\n"
+                            "       -r  fullscreen + rect tool\n"
+                            "       -p  fullscreen + pencil tool\n"
+                            "       -m  fullscreen + marker tool\n");
             return 1;
         }
     }
 
     image_load(path);
     history_push();
+
+    if (fullscreen) rendering_set_fullscreen(1);
     rendering_handle_window_resized();
+    if (start_tool) tools_activate_tool(start_tool);
 
     SDL_Event evt;
     while (SDL_WaitEvent(&evt)) {
@@ -137,7 +164,11 @@ int main(int argc, char* argv[]) {
             break;
         } else if (evt.type == SDL_KEYDOWN) {
             uint8_t ctrl = (evt.key.keysym.mod & KMOD_CTRL) != 0;
-            if (ctrl && evt.key.keysym.sym == CFG_KEY_SAVE) {
+            if (evt.key.keysym.sym == SDLK_F11) {
+                static int fs = 0;
+                fs = !fs;
+                rendering_set_fullscreen(fs);
+            } else if (ctrl && evt.key.keysym.sym == CFG_KEY_SAVE) {
                 do_save();
             } else if (ctrl && evt.key.keysym.sym == CFG_KEY_COPY) {
                 do_copy_image();

@@ -17,6 +17,8 @@ void rendering_deinit(void);
 
 void rendering_handle_window_resized(void);
 
+void rendering_set_fullscreen(int on);
+
 void rendering_wipe_screen(void);
 
 void rendering_swap_screen(void);

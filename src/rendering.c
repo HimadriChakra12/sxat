@@ -41,6 +41,11 @@ void rendering_handle_window_resized(void) {
      SDL_GetWindowSize(wnd, &wnd_rect.w, &wnd_rect.h);
 }
 
+void rendering_set_fullscreen(int on) {
+    SDL_SetWindowFullscreen(wnd, on ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+    rendering_handle_window_resized();
+}
+
 void rendering_wipe_screen(void) {
     SDL_SetRenderTarget(rend, NULL);
     SDL_SetRenderDrawBlendMode(rend, SDL_BLENDMODE_NONE);

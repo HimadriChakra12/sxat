@@ -1,4 +1,4 @@
-/* liau config.h — edit this file to customize keybinds and appearance */
+/* sxat config.h — edit this file to customize keybinds and appearance */
 
 #ifndef _10h0ch_config_h
 #define _10h0ch_config_h

@@ -41,7 +41,7 @@ static void build_save_path(const char* dir, char* out, size_t outsz) {
     time_t t = time(NULL);
     struct tm* tm = localtime(&t);
     char base[256];
-    strftime(base, sizeof(base), "liau_%Y%m%d_%H%M%S", tm);
+    strftime(base, sizeof(base), "sxat_%Y%m%d_%H%M%S", tm);
     snprintf(out, outsz, "%s/%s.png", dir, base);
     if (access(out, F_OK) != 0) return;
     for (int n = 1; n < 10000; n++) {
@@ -65,9 +65,9 @@ static void do_save(void) {
 
 static void do_copy_image(void) {
     /* write to a temp file then pipe to xclip */
-    char tmp[] = "/tmp/liau_copy_XXXXXX.png";
+    char tmp[] = "/tmp/sxat_copy_XXXXXX.png";
     /* mkstemp doesn't support suffix so just use a fixed tmp path */
-    snprintf(tmp, sizeof(tmp), "/tmp/liau_copy_%d.png", (int)getpid());
+    snprintf(tmp, sizeof(tmp), "/tmp/sxat_copy_%d.png", (int)getpid());
     if (image_write_img_to_file(tmp) != 0) {
         fprintf(stderr, "copy: failed to write temp file\n");
         return;
@@ -100,12 +100,12 @@ int main(int argc, char* argv[]) {
     history_init();
 
     /* argument parsing:
-     *   liau <image>          plain open
-     *   liau -f <image>       open fullscreen  (swappy-compat / dihshot default)
-     *   liau -r <image>       open fullscreen + rect tool
-     *   liau -p <image>       open fullscreen + pencil tool
-     *   liau -m <image>       open fullscreen + marker tool
-     *   cat img | liau        stdin pipe
+     *   sxat <image>          plain open
+     *   sxat -f <image>       open fullscreen  (swappy-compat / dihshot default)
+     *   sxat -r <image>       open fullscreen + rect tool
+     *   sxat -p <image>       open fullscreen + pencil tool
+     *   sxat -m <image>       open fullscreen + marker tool
+     *   cat img | sxat        stdin pipe
      */
     const char* path       = NULL;
     int         fullscreen = 0;
@@ -142,7 +142,7 @@ int main(int argc, char* argv[]) {
                     ? select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv)
                     : 0;
         if (ready <= 0) {
-            fprintf(stderr, "usage: liau [-f|-r|-p|-m] <image>\n"
+            fprintf(stderr, "usage: sxat [-f|-r|-p|-m] <image>\n"
                             "       -f  fullscreen\n"
                             "       -r  fullscreen + rect tool\n"
                             "       -p  fullscreen + pencil tool\n"

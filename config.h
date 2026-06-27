@@ -22,7 +22,7 @@
 /* -------------------------------------------------------------------------
  * GLOBAL KEYBINDS
  * ------------------------------------------------------------------------- */
-#define CFG_KEY_QUIT          SDLK_ESCAPE
+#define CFG_KEY_QUIT          SDLK_q
 #define CFG_KEY_TOOL_NONE     SDLK_n
 #define CFG_KEY_TOOL_PENCIL   SDLK_p
 #define CFG_KEY_TOOL_ERASER   SDLK_e

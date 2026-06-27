@@ -172,9 +172,10 @@ int main(int argc, char* argv[]) {
                 do_save();
             } else if (ctrl && evt.key.keysym.sym == CFG_KEY_COPY) {
                 do_copy_image();
+            } else if (evt.key.keysym.sym == CFG_KEY_QUIT) {
+                break;
             } else {
-                if (tools_handle_keydown(&evt.key) == 0)
-                    if (evt.key.keysym.sym == CFG_KEY_QUIT) break;
+                tools_handle_keydown(&evt.key);
             }
         } else if (evt.type == SDL_MOUSEBUTTONDOWN || evt.type == SDL_MOUSEBUTTONUP) {
             tools_handle_mouse_click(&evt.button);
@@ -183,7 +184,6 @@ int main(int argc, char* argv[]) {
         } else if (evt.type == SDL_WINDOWEVENT && evt.window.event == SDL_WINDOWEVENT_RESIZED) {
             rendering_handle_window_resized();
         }
-
         rendering_wipe_screen();
         image_render_img();
         tools_render_tool_ghost();

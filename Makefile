@@ -70,6 +70,7 @@ clean:
 	rm -f $(target)
 
 install: $(target)
+	strip $(target)
 	cp -f $(target) $(APP)
 
 uninstall:
